@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/collabboard}
+    username: ${SPRING_DATASOURCE_USERNAME:cb}
+    password: ${SPRING_DATASOURCE_PASSWORD:cbpass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-super-long-secret-change-me-super-long-secret}
+    issuer: ${JWT_ISSUER:collabboard}
+    accessMinutes: 60
