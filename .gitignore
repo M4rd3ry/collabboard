@@ -37,3 +37,7 @@ logs/
 
 # Docker local data
 postgres-data/
+
+# TypeScript build cache
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo

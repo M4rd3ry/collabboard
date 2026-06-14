@@ -2,33 +2,60 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   backend:
+    name: Backend tests
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
           cache: maven
-      - name: Test backend
+
+      - name: Run backend tests
         working-directory: backend
         run: mvn -B test
 
   frontend:
+    name: Frontend build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install dependencies
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci --include=dev
+
+      - name: Verify required packages
+        working-directory: frontend
+        run: |
+          npm ls react
+          npm ls axios
+          npm ls lucide-react
+          npm ls typescript
+          npm ls vite
+
       - name: Build frontend
         working-directory: frontend
         run: npm run build
