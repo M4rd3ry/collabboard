@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: collabboard
+      POSTGRES_USER: cb
+      POSTGRES_PASSWORD: cbpass
+    ports: ["5432:5432"]
+    volumes: [pg:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cb -d collabboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/collabboard
+      SPRING_DATASOURCE_USERNAME: cb
+      SPRING_DATASOURCE_PASSWORD: cbpass
+      JWT_SECRET: change-this-in-production-to-a-long-random-secret-key-123456
+    ports: ["8080:8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:8080
+    ports: ["5173:5173"]
+    depends_on: [backend]
+volumes:
+  pg:
